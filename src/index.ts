@@ -1,30 +1,39 @@
 import { Elysia, NotFoundError, InternalServerError } from "elysia";
 import { cors } from "@elysiajs/cors";
+import { staticPlugin } from "@elysiajs/static";
 import client from "./connections/client";
-import studentController from "./controllers/student.controller";
-import majorController from "./controllers/major.controller";
-import fileController from "./controllers/file.controller";
+import StudentController from "./controllers/student.controller";
+import MajorController from "./controllers/major.controller";
+import StudentTransactionController from "./controllers/studentTransaction.controller";
+import TransactionController from "./controllers/transaction.controller";
+import TransactionTimestampController from "./controllers/transactionTimestamp.controller";
+import FileController from "./controllers/file.controller";
+import logger from "./middlewares/logger";
 
-await client.connect();
 const apiEndpoints = new Elysia({ prefix: "/api" })
-  .use(studentController)
-  .use(majorController)
-  .use(fileController)
+  .use(StudentController)
+  .use(MajorController)
+  .use(StudentTransactionController)
+  .use(TransactionController)
+  .use(TransactionTimestampController)
+  .use(FileController)
 
 const app = new Elysia()
-  .use(cors())
+  .onStart(async () => await client.connect())
+  .onBeforeHandle(logger)
+  .use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }))
+  .use(staticPlugin())
   .get("/", () => "Hello World!")
   .use(apiEndpoints)
-  .onError(async ({ code }) => {
+  .onError(({ code }) => {
     if (code === "INTERNAL_SERVER_ERROR") {
-      await client.end();
-      await client.connect();
       return new InternalServerError("ไม่มีการตอบกลับจาก server!");
     }
     if (code === "NOT_FOUND") {
       return new NotFoundError("ไม่พบหน้าเพจที่เรียกหา!");
     }
   })
+  .onStop(async () => await client.end())
   .listen(3000)
 
 console.log(

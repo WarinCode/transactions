@@ -3,7 +3,7 @@ import camelcaseKeys from "camelcase-keys";
 import client from "../connections/client";
 import { majorSchema } from "../types/schemas";
 
-const majorController = new Elysia({ prefix: "/majors" })
+const MajorController = new Elysia({ prefix: "/majors" })
     .get("/", async ({ error }) => {
         try {
             const { rows } = await client.query("SELECT * FROM Majors ORDER BY Major_ID");
@@ -137,4 +137,4 @@ const majorController = new Elysia({ prefix: "/majors" })
     })
 
 
-export default majorController;
+export default MajorController;

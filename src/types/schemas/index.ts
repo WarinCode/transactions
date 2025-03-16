@@ -12,7 +12,12 @@ export const idSchema = t.Object({
 });
 
 export const majorSchema = t.Object({
-    majorId: t.String(), 
+    majorId: t.String(),
     majorName: t.String(),
     programName: t.String()
 });
+
+export const studentTransactionSchema = t.Object({
+    transactionId: t.Number(),
+    studentId: t.Number()
+})

@@ -1,6 +1,6 @@
 import Elysia, { file } from "elysia";
 
-const fileController = new Elysia({ prefix: "/file" })
+const FileController = new Elysia({ prefix: "/file" })
     .get("/data.csv", () => file("public/data.csv"));
 
-export default fileController;
+export default FileController;
