@@ -9,8 +9,10 @@ import TransactionController from "./controllers/transaction.controller";
 import TransactionTimestampController from "./controllers/transactionTimestamp.controller";
 import FileController from "./controllers/file.controller";
 import logger from "./middlewares/logger";
+import corsConfig from "./configurations/cors";
 
-const apiEndpoints = new Elysia({ prefix: "/api" })
+const { BACKEND_PORT }: NodeJS.ProcessEnv = Bun.env;
+const RestApiControllers = new Elysia({ prefix: "/api" })
   .use(StudentController)
   .use(MajorController)
   .use(StudentTransactionController)
@@ -20,11 +22,11 @@ const apiEndpoints = new Elysia({ prefix: "/api" })
 
 const app = new Elysia()
   .onStart(async () => await client.connect())
-  .onBeforeHandle(logger)
-  .use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "PATCH", "DELETE"] }))
+  .use(cors(corsConfig))
   .use(staticPlugin())
+  .onBeforeHandle(logger)
   .get("/", () => "Hello World!")
-  .use(apiEndpoints)
+  .use(RestApiControllers)
   .onError(({ code }) => {
     if (code === "INTERNAL_SERVER_ERROR") {
       return new InternalServerError("ไม่มีการตอบกลับจาก server!");
@@ -34,7 +36,7 @@ const app = new Elysia()
     }
   })
   .onStop(async () => await client.end())
-  .listen(3000)
+  .listen(parseInt(BACKEND_PORT ?? "4000"));
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`

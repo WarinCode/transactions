@@ -1,12 +1,12 @@
 import { Client, types } from "pg";
 
-const { USER, PASSWORD, HOST, PORT, DATABASE } = Bun.env;
+const { USER, PASSWORD, HOST, DATABASE_PORT, DATABASE } = Bun.env;
 
 const client: Client = new Client({
     user: USER,
     password: PASSWORD,
     host: HOST,
-    port: parseInt(<string>PORT),
+    port: parseInt(<string>DATABASE_PORT),
     database: DATABASE,
 });
 
