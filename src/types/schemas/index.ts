@@ -17,7 +17,13 @@ export const majorSchema = t.Object({
     programName: t.String()
 });
 
-export const studentTransactionSchema = t.Object({
+export const transactionSchema = t.Object({
     transactionId: t.Number(),
-    studentId: t.Number()
-})
+    studentId: t.Number(),
+    income: t.Number(),
+    expenses: t.Number(),
+    expenseType: t.String(),
+    timestamp: t.String(),
+    date: t.String(),
+    time: t.String()
+});

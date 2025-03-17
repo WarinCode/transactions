@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import camelcaseKeys from "camelcase-keys";
 import client from "../connections/client";
-import { idSchema } from "../types/schemas";
+import { idSchema, transactionSchema } from "../types/schemas";
 
 const TransactionController = new Elysia({ prefix: "/transactions" })
     .get("/", async ({ error }) => {
@@ -208,5 +208,46 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                 params: t.Object({ id: t.Number(), type: t.String() })
             })
     )
+    .post("/create", async ({ set, body: { transactionId, studentId, income, expenses, expenseType, timestamp, date, time }, error }) => {
+        try {
+            const sql: string = `
+            INSERT INTO Student_Transactions VAlUES(${transactionId}, ${studentId})
+            INSERT INTO Transactions VAlUES(${transactionId}, ${income}, ${expenses}, '${expenseType}')
+            INSERT INTO Transaction_Timestamps VALUES(${transactionId}, '${timestamp}', '${date}', '${time}')
+            `;
+            const { rowCount } = await client.query(sql);
+
+            if (rowCount === 3) {
+                set.status = 201;
+                return { message: "เพิ่มธุระกรรมสำเร็จ" };
+            }
+
+            throw new Error("ไม่สามารถเพิ่มธุระกรรมได้!");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                return error(400, e.message);
+            }
+        }
+    }, { body: transactionSchema })
+    .delete("/delete/:id", async ({ params: { id }, error }) => {
+        try {
+            const sql: string = `
+            DELETE FROM Student_Transactions WHERE Transaction_ID = ${id}
+            DELETE FROM Transactions WHERE Transaction_ID = ${id}
+            DELETE FROM Transaction_Timestamps WHERE Transaction_ID = ${id}
+            `;
+            const { rowCount } = await client.query(sql);
+
+            if (rowCount === 3) {
+                return { message: "ลบธุรกกรมสำเร็จ" };
+            }
+
+            throw new Error("ไม่สามารถลบธุระกรรมได้!");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                return error(400, e.message);
+            }
+        }
+    }, { params: idSchema })
 
 export default TransactionController;
