@@ -19,15 +19,39 @@ const RestApiControllers = new Elysia({ prefix: "/api" })
   .use(StudentTransactionController)
   .use(TransactionController)
   .use(TransactionTimestampController)
-  .use(FileController)
+  .use(FileController);
 
 const app = new Elysia()
   .onStart(async () => await client.connect())
   .use(cors(corsConfig))
   .use(staticPlugin())
-  .use(openapi({ path: "/docs" }))
+  .use(
+    openapi({
+      documentation: {
+        info: {
+          title: "Elysia Documentation",
+          version: "1.0",
+          description:
+            "เว็บเอกสารสำหรับการอธิบายการใช้งาน APIs ของโปรเจค transactions โปรเจคนี้ได้ใช้ข้อมูลที่เก็บมาจากวิชา Fundamentals of Database Systems (01418221) นำมาพัฒนาต่อเป็น Web Service โดยใช้ Elysia เป็น Backend Framework ในการพัฒนา",
+          contact: {
+            name: "Warin Saipanya",
+            email: "warin.sai@ku.th",
+          },
+        }
+      },
+      path: "/docs",
+      exclude: { paths: ["/public/*"], staticFile: true },
+    })
+  )
   .use(Logestic.preset("common"))
-  .get("/", () => "Hello World!")
+  .get("/", () => "Hello World!", {
+    detail: {
+      description:
+        "endpoint เริ่มต้นของเว็บไซต์จะแสดงข้อความ Hello World ออกมา",
+      summary: "หน้าแรกของเว็บไซต์",
+      tags: ["Home"],
+    },
+  })
   .use(RestApiControllers)
   .onError(({ code }) => {
     if (code === "INTERNAL_SERVER_ERROR") {

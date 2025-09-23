@@ -4,7 +4,7 @@ import client from "../connections/client";
 import { idSchema, transactionSchema } from "../types/schemas";
 
 const TransactionController = new Elysia({ prefix: "/transactions" })
-    .get("/", async ({ error }) => {
+    .get("/", async ({ status }) => {
         try {
             const sql: string = `SELECT Students.Student_ID, Student_Name, Income, Expenses, Expense_Type FROM Students
             INNER JOIN Student_Transactions ON Student_Transactions.Student_ID = Students.Student_ID
@@ -14,11 +14,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
             return camelcaseKeys(rows);
         } catch (e: unknown) {
             if (e instanceof Error) {
-                return error(400, e.message);
+                return status(400, e.message);
             }
         }
     })
-    .get("/:id", async ({ params: { id }, error }) => {
+    .get("/:id", async ({ params: { id }, status }) => {
         try {
             const sql: string = `SELECT Students.Student_ID, Student_Name, Income, Expenses, Expense_Type FROM Students
             INNER JOIN Student_Transactions ON Student_Transactions.Student_ID = Students.Student_ID
@@ -33,11 +33,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
             throw new Error(`ไม่มี id ${id} อยู่ในฐานข้อมูล!`);
         } catch (e: unknown) {
             if (e instanceof Error) {
-                return error(400, e.message);
+                return status(400, e.message);
             }
         }
     }, { params: idSchema })
-    .get("/student-id/:id", async ({ params: { id }, error }) => {
+    .get("/student-id/:id", async ({ params: { id }, status }) => {
         try {
             const sql: string = `SELECT Students.Student_ID, Student_Name, Income, Expenses, Expense_Type FROM Students
             INNER JOIN Student_Transactions ON Student_Transactions.Student_ID = Students.Student_ID
@@ -53,11 +53,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
             return camelcaseKeys(rows);
         } catch (e: unknown) {
             if (e instanceof Error) {
-                return error(400, e.message);
+                return status(400, e.message);
             }
         }
     }, { params: idSchema })
-    .get("/expense/type/:type", async ({ params: { type }, error }) => {
+    .get("/expense/type/:type", async ({ params: { type }, status }) => {
         const decodedString: string = decodeURI(type);
 
         try {
@@ -75,12 +75,12 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
             return camelcaseKeys(rows);
         } catch (e: unknown) {
             if (e instanceof Error) {
-                return error(400, e.message);
+                return status(400, e.message);
             }
         }
     })
     .group("/total", (app) =>
-        app.get("/income", async ({ error }) => {
+        app.get("/income", async ({ status }) => {
             try {
                 const sql: string = `SELECT SUM(Income) AS Total_Income, COUNT(Students.Major_ID) AS Total_Transactions FROM Students
             INNER JOIN Student_Transactions ON Student_Transactions.Student_ID = Students.Student_ID
@@ -96,11 +96,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                 return camelcaseKeys(rows[0]);
             } catch (e: unknown) {
                 if (e instanceof Error) {
-                    return error(400, e.message);
+                    return status(400, e.message);
                 }
             }
         })
-            .get("/expenses", async ({ error }) => {
+            .get("/expenses", async ({ status }) => {
                 try {
                     const sql: string = `SELECT SUM(Expenses) AS Total_Expenses, COUNT(Students.Major_ID) AS Total_Transactions FROM Students
                 INNER JOIN Student_Transactions ON Student_Transactions.Student_ID = Students.Student_ID
@@ -116,11 +116,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                     return camelcaseKeys(rows[0]);
                 } catch (e: unknown) {
                     if (e instanceof Error) {
-                        return error(400, e.message);
+                        return status(400, e.message);
                     }
                 }
             })
-            .get("/expenses/:id", async ({ error, params: { id } }) => {
+            .get("/expenses/:id", async ({ status, params: { id } }) => {
                 try {
                     const sql: string = `SELECT Student_Name, Students.Student_ID, 
                 SUM(Expenses) AS Total_Expenses, COUNT(Students.Student_ID) AS Total_Transactions FROM Students
@@ -137,11 +137,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                     return camelcaseKeys(rows[0]);
                 } catch (e: unknown) {
                     if (e instanceof Error) {
-                        return error(400, e.message);
+                        return status(400, e.message);
                     }
                 }
             }, { params: idSchema })
-            .get("/expenses/all", async ({ error }) => {
+            .get("/expenses/all", async ({ status }) => {
                 try {
                     const sql: string = `SELECT Student_Name, Students.Student_ID, 
                 SUM(Expenses) AS Total_Expenses, COUNT(Students.Student_ID) AS Total_Transactions FROM Students
@@ -159,11 +159,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                     return camelcaseKeys(rows);
                 } catch (e: unknown) {
                     if (e instanceof Error) {
-                        return error(400, e.message);
+                        return status(400, e.message);
                     }
                 }
             })
-            .get("/expenses/type", async ({ error }) => {
+            .get("/expenses/type", async ({ status }) => {
                 try {
                     const sql: string = `SELECT SUM(Expenses) AS Total_Expenses, COUNT(Expense_Type) AS Total_Expense_Types, Expense_Type FROM Students
                 INNER JOIN Student_Transactions ON Student_Transactions.Student_ID = Students.Student_ID
@@ -178,11 +178,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                     return camelcaseKeys(rows);
                 } catch (e: unknown) {
                     if (e instanceof Error) {
-                        return error(400, e.message);
+                        return status(400, e.message);
                     }
                 }
             })
-            .get("/student-id/:id/expenses/type/:type", async ({ params: { id, type }, error }) => {
+            .get("/student-id/:id/expenses/type/:type", async ({ params: { id, type }, status }) => {
                 const decoded: string = decodeURI(type);
 
                 try {
@@ -201,14 +201,14 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
                     return camelcaseKeys(rows[0]);
                 } catch (e: unknown) {
                     if (e instanceof Error) {
-                        return error(400, e.message);
+                        return status(400, e.message);
                     }
                 }
             }, {
                 params: t.Object({ id: t.Number(), type: t.String() })
             })
     )
-    .post("/create", async ({ set, body: { transactionId, studentId, income, expenses, expenseType, timestamp, date, time }, error }) => {
+    .post("/create", async ({ set, body: { transactionId, studentId, income, expenses, expenseType, timestamp, date, time }, status }) => {
         try {
             const sql: string = `
             INSERT INTO Student_Transactions VAlUES(${transactionId}, ${studentId})
@@ -225,11 +225,11 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
             throw new Error("ไม่สามารถเพิ่มธุระกรรมได้!");
         } catch (e: unknown) {
             if (e instanceof Error) {
-                return error(400, e.message);
+                return status(400, e.message);
             }
         }
     }, { body: transactionSchema })
-    .delete("/delete/:id", async ({ params: { id }, error }) => {
+    .delete("/delete/:id", async ({ params: { id }, status }) => {
         try {
             const sql: string = `
             DELETE FROM Student_Transactions WHERE Transaction_ID = ${id}
@@ -245,7 +245,7 @@ const TransactionController = new Elysia({ prefix: "/transactions" })
             throw new Error("ไม่สามารถลบธุระกรรมได้!");
         } catch (e: unknown) {
             if (e instanceof Error) {
-                return error(400, e.message);
+                return status(400, e.message);
             }
         }
     }, { params: idSchema })
