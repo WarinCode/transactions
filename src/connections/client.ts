@@ -8,6 +8,8 @@ const client: Client = new Client({
     host: HOST,
     port: parseInt(<string>DATABASE_PORT),
     database: DATABASE,
+    ssl: true,
+    connectionTimeoutMillis: 5000
 });
 
 export default client;
