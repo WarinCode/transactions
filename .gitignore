@@ -45,3 +45,5 @@ package-lock.json
 .env.production
 
 .env
+
+server.exe
