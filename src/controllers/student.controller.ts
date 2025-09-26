@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import camelcaseKeys from "camelcase-keys";
 import client from "../connections/client";
-import { studentSchema, idSchema } from "../types/schemas";
+import { studentSchema, studentIdSchema } from "../types/schemas";
 
 const StudentController = new Elysia({ prefix: "/students" })
   .get(
@@ -47,7 +47,7 @@ const StudentController = new Elysia({ prefix: "/students" })
       }
     },
     {
-      params: idSchema,
+      params: studentIdSchema,
       detail: {
         description:
           "endpoint สำหรับดึงข้อมูลนิสิตตามรหัสนิสิตที่ระบุไว้โดยค่า param ที่ส่งเข้ามาใน path ต้องเป็นเลขรหัสนิสิต",
@@ -291,7 +291,7 @@ const StudentController = new Elysia({ prefix: "/students" })
       }
     },
     {
-      params: idSchema,
+      params: studentIdSchema,
       detail: {
         description: "endpoint สำหรับลบข้อมูลนิสิตด้วยรหัสนิสิตโดยต้องระบุค่าผ่าน param ที่ส่งเข้ามาใน path ต้องเป็นเลขรหัสนิสิต",
         summary: "ลบข้อมูลนิสิตด้วยรหัสนิสิต",

@@ -22,7 +22,7 @@ const RestApiControllers = new Elysia({ prefix: "/api" })
   .use(FileController);
 
 const app = new Elysia()
-  .onStart(async () => await client.connect())
+  .onStart(() => client.connect())
   .use(cors(corsConfig))
   .use(staticPlugin())
   .use(
@@ -61,7 +61,7 @@ const app = new Elysia()
       return new NotFoundError("ไม่พบหน้าเพจที่เรียกหา!");
     }
   })
-  .onStop(async () => await client.end())
+  .onStop(() => client.end())
   .listen(parseInt(BACKEND_PORT ?? "4000"));
 
 console.log(
