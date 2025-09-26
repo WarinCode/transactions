@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "bun run --watch src/server.ts",
     "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server src/server.ts",
-    "start": "./server.exe"
+    "start": "server.exe"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
