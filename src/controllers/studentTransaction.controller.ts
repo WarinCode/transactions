@@ -1,7 +1,6 @@
 import Elysia, { t } from "elysia";
 import camelcaseKeys from "camelcase-keys";
 import client from "../connections/client";
-import { idSchema } from "../types/schemas";
 
 const StudentTransactionController = new Elysia({
   prefix: "/student-transaction",
